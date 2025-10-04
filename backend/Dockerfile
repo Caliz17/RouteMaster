@@ -8,8 +8,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiamos todo el código al contenedor
-COPY . .
+# Copiamos el código de la carpeta app
+COPY ./app ./app
 
 # Exponemos el puerto que usará FastAPI
 EXPOSE 8000

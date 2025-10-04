@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "Stud3ntP@ssw0rd2025"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - backend
+
+  backend:
+    build: ./app/backend
+    container_name: backend_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app/backend:/app
+    networks:
+      - backend
+
+  frontend:
+    build: ./app/frontend
+    container_name: frontend_app
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./app/frontend:/app
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

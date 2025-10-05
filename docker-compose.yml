@@ -5,33 +5,51 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
     environment:
-      SA_PASSWORD: "Stud3ntP@ssw0rd2025"
-      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${DB_PASSWORD}"
+      ACCEPT_EULA: "${ACCEPT_EULA}"
     ports:
-      - "1433:1433"
+      - "${SQLSERVER_PORT}:1433"
     networks:
       - backend
+    volumes:
+      - sqlserver_data:/var/opt/mssql
 
   backend:
-    build: ./app/backend
+    build: ./backend
     container_name: backend_app
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:8000"
     volumes:
-      - ./app/backend:/app
+      - ./backend:/app
     networks:
       - backend
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DEBUG=${BACKEND_DEBUG}
+      - SECRET_KEY=${BACKEND_SECRET_KEY}
+    depends_on:
+      - sqlserver
 
   frontend:
-    build: ./app/frontend
+    build: ./frontend
     container_name: frontend_app
     ports:
-      - "8080:8000"
+      - "${FRONTEND_PORT}:8000"
     volumes:
-      - ./app/frontend:/app
+      - ./frontend:/app
     networks:
+      - backend
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+    depends_on:
       - backend
 
 networks:
   backend:
     driver: bridge
+
+volumes:
+  sqlserver_data:

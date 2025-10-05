@@ -1,18 +1,30 @@
-# Usamos Python 3.12 slim
+# Imagen base
 FROM python:3.12-slim
 
-# Establecemos directorio de trabajo
+# Node.js para Tailwind
+RUN apt-get update && apt-get install -y curl gnupg
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs build-essential
+
+# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiamos requirements e instalamos dependencias
+# Copiar requirements y package.json
 COPY requirements.txt .
+COPY package.json package-lock.json ./
+
+# Instalar Python dependencies
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiamos todo el código al contenedor
+# Instalar Node dependencies
+RUN npm install
+
+# Copiar todo el código del frontend
 COPY . .
 
-# Exponemos el puerto de Django
+# Exponer puerto Django
 EXPOSE 8000
 
-# Comando para correr Django en modo desarrollo
+# Comando por defecto para correr frontend
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

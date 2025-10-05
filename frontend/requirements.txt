@@ -1,3 +1,5 @@
 django
+Django>=4.2,<5
 django-tailwind
+django-browser-reload
 pyodbc  # si Django se conecta a SQL Server
